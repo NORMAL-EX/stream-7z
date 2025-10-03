@@ -1,0 +1,479 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Stream-7z API",
+    "description": "HTTP Range-based Archive Preview Service with POST JSON API",
+    "version": "2.0.0",
+    "contact": {
+      "name": "Stream-7z Support",
+      "url": "https://github.com/NORMAL-EX/stream-7z"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://api.example.com",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Health check endpoints"
+    },
+    {
+      "name": "Archive",
+      "description": "Archive operations (POST JSON API)"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check",
+        "description": "Check if the server is running properly",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-10-01T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/info": {
+      "post": {
+        "tags": ["Archive"],
+        "summary": "Get archive information",
+        "description": "Retrieve metadata about an archive file",
+        "operationId": "getArchiveInfo",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InfoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Archive information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/list": {
+      "post": {
+        "tags": ["Archive"],
+        "summary": "List files in archive",
+        "description": "Get a list of all files and directories in the archive",
+        "operationId": "listArchiveFiles",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Path not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/extract": {
+      "post": {
+        "tags": ["Archive"],
+        "summary": "Extract file from archive",
+        "description": "Extract and download a single file from the archive",
+        "operationId": "extractFile",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File extracted successfully",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key for authentication"
+      }
+    },
+    "schemas": {
+      "InfoRequest": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the archive file",
+            "example": "https://example.com/archive.zip"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password for encrypted archive (optional)",
+            "example": "mypassword"
+          }
+        }
+      },
+      "ListRequest": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the archive file",
+            "example": "https://example.com/archive.zip"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password for encrypted archive (optional)",
+            "example": "mypassword"
+          },
+          "innerPath": {
+            "type": "string",
+            "description": "Internal path to list. Empty string lists all files recursively, '/' lists root directory only",
+            "example": "docs/"
+          }
+        }
+      },
+      "ExtractRequest": {
+        "type": "object",
+        "required": ["url", "file"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the archive file",
+            "example": "https://example.com/archive.zip"
+          },
+          "file": {
+            "type": "string",
+            "description": "Path of the file to extract",
+            "example": "README.md"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password for encrypted archive (optional)",
+            "example": "mypassword"
+          }
+        }
+      },
+      "InfoResponse": {
+        "type": "object",
+        "properties": {
+          "isEncrypted": {
+            "type": "boolean",
+            "description": "Whether the archive is encrypted",
+            "example": true
+          },
+          "requiresPassword": {
+            "type": "boolean",
+            "description": "Whether a password is required to access the archive",
+            "example": true
+          },
+          "totalFiles": {
+            "type": "integer",
+            "description": "Total number of files in the archive",
+            "example": 42
+          },
+          "totalSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total uncompressed size in bytes",
+            "example": 104857600
+          },
+          "format": {
+            "type": "string",
+            "description": "Archive format",
+            "example": "zip",
+            "enum": ["zip", "rar", "7z", "tar", "tar.gz", "tar.bz2", "tar.xz"]
+          },
+          "comment": {
+            "type": "string",
+            "description": "Archive comment (if any)",
+            "example": "This is a comment"
+          }
+        }
+      },
+      "ListResponse": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileEntry"
+            }
+          }
+        }
+      },
+      "FileEntry": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File or directory path",
+            "example": "docs/guide.pdf"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Uncompressed file size in bytes",
+            "example": 1048576
+          },
+          "compressedSize": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Compressed file size in bytes",
+            "example": 524288
+          },
+          "modTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last modification time",
+            "example": "2025-09-15T10:30:00Z"
+          },
+          "isDir": {
+            "type": "boolean",
+            "description": "Whether this is a directory",
+            "example": false
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "url is required"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code",
+            "example": "MISSING_URL",
+            "enum": [
+              "MISSING_API_KEY",
+              "INVALID_API_KEY",
+              "IP_NOT_WHITELISTED",
+              "RATE_LIMIT_EXCEEDED",
+              "TOO_MANY_REQUESTS",
+              "METHOD_NOT_ALLOWED",
+              "INVALID_CONTENT_TYPE",
+              "INVALID_JSON",
+              "MISSING_URL",
+              "MISSING_FILE",
+              "WRONG_PASSWORD",
+              "PASSWORD_REQUIRED",
+              "FILE_NOT_FOUND",
+              "PATH_NOT_FOUND",
+              "UNSUPPORTED_FORMAT",
+              "URL_ERROR",
+              "INVALID_PATH",
+              "INTERNAL_ERROR"
+            ]
+          },
+          "details": {
+            "type": "string",
+            "description": "Additional error details (optional)",
+            "example": "More information about the error"
+          }
+        }
+      }
+    }
+  }
+}

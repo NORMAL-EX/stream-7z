@@ -1,0 +1,55 @@
+# Stream-7z 服务器配置 - 无限制版本
+# ========================================
+
+server:
+  # 服务器端口
+  port: 8080
+  
+  # 认证配置（必须配置）
+  auth:
+    enabled: true
+    header_key: "X-API-Key"
+    # 配置你的API密钥（请修改为强密码）
+    api_keys:
+      - "my-secret-key-change-me-please"
+      - "backup-key-12345"
+  
+  # 超时配置 - 无限制
+  timeout:
+    read: 0s    # 0 表示无超时限制
+    write: 0s   # 0 表示无超时限制
+  
+  # CORS 跨域配置
+  cors:
+    enabled: true
+    origins:
+      - "*"
+  
+  # 速率限制
+  rate_limit:
+    enabled: true
+    requests_per_min: 60
+    whitelist:
+      - "127.0.0.1"
+      - "::1"
+  
+  # IP白名单（可选，默认关闭）
+  ip_whitelist:
+    enabled: false
+    ips:
+      - "192.168.1.100"
+      - "192.168.1.0/24"
+  
+  # 最大并发请求数
+  max_concurrent: 100
+
+# 压缩包库配置 - 无限制
+library:
+  # 最大文件大小 - 设为 0 表示无限制
+  max_file_size: 0
+  
+  # 操作超时 - 设为 0 表示无限制
+  timeout: 0s
+  
+  # 调试模式
+  debug: false

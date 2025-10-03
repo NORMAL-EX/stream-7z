@@ -1,0 +1,171 @@
+# Stream-7z Server Configuration
+# 压缩包流式预览服务器配置文件
+# ========================================
+
+server:
+  # 服务器端口 / Server port
+  # 默认: 8080
+  port: 8080
+  
+  # ========================================
+  # 认证配置 / Authentication Configuration
+  # ========================================
+  auth:
+    # 是否启用认证 / Enable authentication
+    # 推荐: true (生产环境必须启用)
+    enabled: true
+    
+    # API Key 请求头名称 / API Key header name
+    # 客户端需要在HTTP请求头中包含此字段
+    header_key: "X-API-Key"
+    
+    # 单个密钥（向后兼容）/ Single key (backward compatible)
+    # 如果你只需要一个密钥，可以使用这个字段
+    secret_key: "your-secret-key-change-me-in-production"
+    
+    # 多个API密钥（推荐）/ Multiple API keys (recommended)
+    # 支持为不同的应用或用户配置不同的密钥
+    # 便于密钥轮换和权限管理
+    api_keys:
+      - "app1-key-abc123xyz789"
+      - "app2-key-def456uvw012"
+      - "user1-key-ghi789rst345"
+      # 添加更多密钥...
+  
+  # ========================================
+  # 超时配置 / Timeout Configuration
+  # ========================================
+  timeout:
+    # 读取超时 / Read timeout
+    # 服务器读取请求的最大时间
+    read: 30s
+    
+    # 写入超时 / Write timeout  
+    # 服务器写入响应的最大时间
+    write: 30s
+  
+  # ========================================
+  # CORS 跨域配置 / CORS Configuration
+  # ========================================
+  cors:
+    # 是否启用CORS / Enable CORS
+    enabled: true
+    
+    # 允许的源 / Allowed origins
+    # "*" 表示允许所有源（仅用于开发环境）
+    # 生产环境应该指定具体的域名
+    origins:
+      - "*"
+      # 生产环境示例 / Production examples:
+      # - "https://your-frontend.com"
+      # - "https://app.your-domain.com"
+      # - "http://localhost:3000"  # 开发环境
+  
+  # ========================================
+  # 速率限制配置 / Rate Limiting Configuration
+  # ========================================
+  rate_limit:
+    # 是否启用速率限制 / Enable rate limiting
+    # 防止API滥用和DDoS攻击
+    enabled: true
+    
+    # 每分钟请求数 / Requests per minute
+    # 每个IP地址每分钟允许的最大请求数
+    requests_per_min: 60
+    
+    # 白名单IP（不受速率限制）/ Whitelist IPs (bypass rate limit)
+    # 这些IP不受速率限制影响，适用于内部服务
+    whitelist:
+      - "127.0.0.1"           # 本地回环
+      - "::1"                 # IPv6 本地回环
+      # - "192.168.1.100"     # 内部服务器
+  
+  # ========================================
+  # IP白名单配置 / IP Whitelist Configuration
+  # ========================================
+  # 这是最严格的访问控制方式
+  # 只有白名单中的IP才能访问服务
+  ip_whitelist:
+    # 是否启用IP白名单 / Enable IP whitelist
+    # 注意: 启用后，只有白名单中的IP才能访问
+    # 建议: 仅在需要严格控制访问的场景下启用
+    enabled: false
+    
+    # 允许访问的IP列表 / Allowed IPs
+    # 支持两种格式:
+    # 1. 单个IP地址: "192.168.1.100"
+    # 2. CIDR网段: "192.168.1.0/24"
+    ips:
+      # 单个IP示例 / Individual IP examples:
+      - "192.168.1.100"           # 办公室服务器
+      - "203.0.113.10"            # 云服务器
+      
+      # CIDR网段示例 / CIDR range examples:
+      - "192.168.1.0/24"          # 本地网络
+      - "10.0.0.0/8"              # 内部网络
+      - "172.16.0.0/12"           # 私有网络
+      
+      # IPv6 示例 / IPv6 examples:
+      - "2001:db8::1"             # 单个IPv6
+      - "2001:db8::/32"           # IPv6网段
+      
+      # 云服务商IP段示例 / Cloud provider examples:
+      # - "52.0.0.0/8"            # AWS部分IP段
+      # - "104.16.0.0/12"         # Cloudflare
+  
+  # 最大并发请求数 / Maximum concurrent requests
+  # 限制服务器同时处理的最大请求数
+  # 防止资源耗尽
+  max_concurrent: 100
+
+# ========================================
+# 压缩包库配置 / Archive Library Configuration
+# ========================================
+library:
+  # 最大文件大小（字节）/ Maximum file size (bytes)
+  # 0 表示不限制
+  # 推荐: 根据您的服务器内存设置合理的值
+  max_file_size: 524288000  # 500MB (500 * 1024 * 1024)
+  
+  # 操作超时 / Operation timeout
+  # 压缩包操作的最大时间
+  timeout: 30s
+  
+  # 调试模式 / Debug mode
+  # 启用后会输出详细的调试日志
+  # 生产环境建议设置为 false
+  debug: false
+
+# ========================================
+# 配置说明 / Configuration Notes
+# ========================================
+# 
+# 1. 安全建议 / Security Recommendations:
+#    - 生产环境必须启用认证 (auth.enabled: true)
+#    - 使用强密码作为API密钥 (建议32位以上随机字符串)
+#    - 启用速率限制防止滥用
+#    - 根据需要配置IP白名单
+#    - 定期轮换API密钥
+# 
+# 2. 性能优化 / Performance Optimization:
+#    - 根据服务器资源调整 max_concurrent
+#    - 设置合理的 max_file_size 限制
+#    - 调整 timeout 值以平衡性能和可靠性
+# 
+# 3. 监控建议 / Monitoring Recommendations:
+#    - 使用 /health 端点进行健康检查
+#    - 监控日志中的错误和警告
+#    - 关注速率限制触发情况
+# 
+# 4. 云盘集成 / Cloud Storage Integration:
+#    当用于云盘项目时:
+#    - 建议启用IP白名单，只允许云盘服务器访问
+#    - 为云盘服务分配专用的API密钥
+#    - 根据云盘流量调整速率限制
+#    - 设置合理的并发限制
+# 
+# 5. 环境变量覆盖 / Environment Variable Override:
+#    可以使用环境变量覆盖配置:
+#    export STREAM7Z_SERVER_PORT=9000
+#    export STREAM7Z_SERVER_AUTH_ENABLED=true
+#    export STREAM7Z_SERVER_AUTH_SECRET_KEY=your-key

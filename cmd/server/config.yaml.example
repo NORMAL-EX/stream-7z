@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  auth:
+    enabled: true
+    header_key: "X-API-Key"
+    secret_key: "your-secret-key-here-change-this"
+  timeout:
+    read: 30s
+    write: 30s
+  cors:
+    enabled: true
+    origins:
+      - "*"
+  rate_limit:
+    enabled: true
+    requests_per_min: 60
+    whitelist:
+      - "127.0.0.1"
+      - "::1"
+  max_concurrent: 100
+
+library:
+  max_file_size: 524288000  # 500MB in bytes
+  timeout: 30s
+  debug: false
